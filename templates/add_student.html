@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Student</h2>
+
+<form action="/add_student" method="POST" class="form-card">
+<div style="text-align:center;">
+    <a href="/add_student_page?year=1" class="add-btn">➕ Add Student</a>
+</div>
+<input name="name" placeholder="Name" required>
+<input name="regno" placeholder="Reg No" required>
+<input type="date" name="admission">
+
+<input type="hidden" name="year" value="{{ year }}">
+
+<input name="dept" placeholder="Dept">
+<input name="phone" placeholder="Phone">
+<input name="parent" placeholder="Parent">
+<input name="address" placeholder="Address">
+
+<select name="assignment">
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<input type="number" name="batch_year" placeholder="Batch Year" required>
+
+<button type="submit">Save</button>
+
+</form>
+
+{% endblock %}

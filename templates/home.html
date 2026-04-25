@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Department Achievements</h2>
+
+<div class="slider">
+    <img id="slide" src="{{ url_for('static', filename='images/img1.jpg') }}" width="400">
+</div>
+
+<script>
+let images = ["img1.jpg","img2.jpg","img3.jpg"];
+let i = 0;
+
+setInterval(() => {
+    i = (i+1) % images.length;
+    document.getElementById("slide").src = "/static/images/" + images[i];
+}, 2000);
+</script>
+
+{% endblock %}

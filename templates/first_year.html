@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2> First Year Students</h2>
+
+<form method="POST" class="top-form">
+    
+<select name="second_year" required>
+
+<option value="">Select Batch</option>
+
+{% for y in range(2000, 2101) %}
+<option value="{{ y }}">{{ y }}</option>
+{% endfor %}
+
+</select>
+
+<button>Load</button>
+
+</form>
+
+<a href="/add_student_page?year=1" class="add-btn">➕ Add Student</a>
+
+{% if students %}
+<div class="glass-card">
+
+<table>
+
+<tr>
+    <th>Name</th>
+    <th>Reg No</th>
+    <th>Action</th>
+</tr>
+
+{% for s in students %}
+
+<tr>
+    <td>{{ s[1] }}</td>
+    <td>{{ s[2] }}</td>
+    <td>
+        <button class="view-btn" onclick="toggleDetails('d{{ s[0] }}')">View</button>
+    </td>
+</tr>
+
+<tr id="d{{ s[0] }}" class="detail-row">
+<td colspan="3">
+
+<p><b>Admission:</b> {{ s[3] }}</p>
+<p><b>Dept:</b> {{ s[5] }}</p>
+<p><b>Phone:</b> {{ s[6] }}</p>
+<p><b>Parent:</b> {{ s[7] }}</p>
+<p><b>Address:</b> {{ s[8] }}</p>
+<p><b>Assignment:</b> {{ s[9] }}</p>
+<p><b>Batch:</b> {{ s[10] }}</p>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+{% else %}
+<p class="empty">No students found</p>
+{% endif %}
+
+<script>
+function toggleDetails(id){
+    document.querySelectorAll(".detail-row").forEach(el=>{
+        if(el.id !== id){
+            el.style.display = "none";
+        }
+    });
+
+    let row = document.getElementById(id);
+    row.style.display = (row.style.display === "table-row") ? "none" : "table-row";
+}
+</script>
+
+{% endblock %}

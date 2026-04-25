@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subjects</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background: #f5f7fb;
+            padding: 20px;
+        }
+
+        h2{
+            color: #333;
+        }
+
+        .box{
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        input{
+            padding: 8px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button{
+            padding: 8px 15px;
+            border: none;
+            background: #4a6cf7;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover{
+            background: #2f4bd1;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td{
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .key-box{
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty{
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>📘 Semester {{ sem }}</h2>
+
+<!-- 🔥 STAFF ONLY: ADD SUBJECT -->
+{% if session.get("role") == "staff" %}
+<div class="box">
+    <h3>Add Subject</h3>
+
+    <form action="/add_subject" method="POST">
+        <input type="hidden" name="semester" value="{{ sem }}">
+
+        <input name="name" placeholder="Subject Name" required>
+        <input name="key" placeholder="Access Key" required>
+
+        <button type="submit">Add</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- 🔥 SUBJECT LIST -->
+<div class="box">
+
+{% if subjects %}
+
+<table>
+<tr>
+    <th>Subject</th>
+    <th>Access</th>
+</tr>
+
+{% for s in subjects %}
+<tr>
+    <td>{{ s[1] }}</td>
+
+    <td>
+        {% if session.get("role") == "staff" %}
+            <!-- 🔐 STAFF: key required -->
+            <form action="/open_subject/{{ s[0] }}" method="POST" class="key-box">
+                <input type="password" name="key" placeholder="Enter Key" required>
+                <button type="submit">Open</button>
+            </form>
+
+        {% else %}
+            <!-- 🎓 STUDENT: no key -->
+            <form action="/open_subject/{{ s[0] }}" method="POST">
+                <button type="submit">Open</button>
+            </form>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% else %}
+<p class="empty">No subjects added yet</p>
+{% endif %}
+
+</div>
+
+</body>
+</html>

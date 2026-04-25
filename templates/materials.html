@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Materials</h2>
+
+{% if session['role'] == 'staff' %}
+<form method="POST" action="/upload" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button>Upload</button>
+</form>
+{% endif %}
+
+<ul>
+{% for file in files %}
+<li>
+    {{ file }}
+    <a href="/download/{{ file }}">Download</a>
+</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Staff Details</h2>
+
+<button onclick="toggleForm()" class="add-btn">➕ Add Staff</button>
+
+<div id="formBox" class="glass-card" style="display:none;">
+<form action="/add_staff" method="POST">
+
+<input name="name" placeholder="Name" required>
+<input name="dept" placeholder="Department">
+<input name="contact" placeholder="Contact">
+<input name="position" placeholder="Position">
+
+<button>Save</button>
+</form>
+</div>
+
+{% if staff %}
+<div class="glass-card">
+
+<table>
+
+<tr>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Action</th>
+</tr>
+
+{% for s in staff %}
+
+<tr>
+    <td>{{ s[1] }}</td>
+    <td>{{ s[2] }}</td>
+    <td>
+        <button class="view-btn" onclick="toggleDetails('d{{ s[0] }}')">View</button>
+    </td>
+</tr>
+
+<tr id="d{{ s[0] }}" class="detail-row">
+<td colspan="3">
+
+<p><b>Name:</b> {{ s[1] }}</p>
+<p><b>Department:</b> {{ s[2] }}</p>
+<p><b>Contact:</b> {{ s[3] }}</p>
+<p><b>Position:</b> {{ s[4] }}</p>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+{% else %}
+<p class="empty">No staff found</p>
+{% endif %}
+
+<script>
+function toggleForm(){
+    let f = document.getElementById("formBox");
+    f.style.display = f.style.display === "none" ? "block" : "none";
+}
+
+function toggleDetails(id){
+    document.querySelectorAll(".detail-row").forEach(el=>{
+        if(el.id !== id){
+            el.style.display = "none";
+        }
+    });
+
+    let row = document.getElementById(id);
+    row.style.display = (row.style.display === "table-row") ? "none" : "table-row";
+}
+</script>
+
+{% endblock %}

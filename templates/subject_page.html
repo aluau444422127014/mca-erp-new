@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subject Page</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background: #f5f7fb;
+            padding: 20px;
+        }
+
+        h2{
+            color: #333;
+        }
+
+        .box{
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        input, select{
+            padding: 8px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button{
+            padding: 8px 15px;
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td{
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .readonly{
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2> Subject</h2>
+
+<!-- 🔥 Batch Filter -->
+<div class="box">
+<form method="GET">
+    <input name="batch" placeholder="Enter Batch (2025)" value="{{ batch }}">
+    <input type="hidden" name="exam" value="{{ selected_exam }}">
+    <button type="submit">Load Students</button>
+</form>
+</div>
+
+<!-- 🔥 STUDENTS + MARKS -->
+<div class="box">
+
+<form method="GET">
+
+    <!-- 🔥 BATCH preserve -->
+    <input type="hidden" name="batch" value="{{ request.args.get('batch', '') }}">
+
+    <label>Select Exam:</label>
+
+    <!-- 🔥 EXAM DROPDOWN -->
+    <select name="exam" onchange="this.form.submit()">
+
+        <option value="IIT1" {{ 'selected' if selected_exam == 'IIT1' else '' }}>IIT1</option>
+
+        <option value="IIT2" {{ 'selected' if selected_exam == 'IIT2' else '' }}>IIT2</option>
+
+        <option value="IIT3" {{ 'selected' if selected_exam == 'IIT3' else '' }}>IIT3</option>
+
+        <option value="MODEL" {{ 'selected' if selected_exam == 'MODEL' else '' }}>MODEL</option>
+
+        <option value="SEM" {{ 'selected' if selected_exam == 'SEM' else '' }}>SEM</option>
+
+    </select>
+
+</form>
+
+<br>
+
+<form action="/save_marks" method="POST">
+
+<input type="hidden" name="sid" value="{{ sid }}">
+<input type="hidden" name="exam" value="{{ selected_exam }}">
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Reg No</th>
+    <th>Marks ({{ selected_exam }})</th>
+</tr>
+
+{% for s in students %}
+<tr>
+    <td>{{ s[0] }}</td>
+    <td>{{ s[1] }}</td>
+
+    <td>
+        {% if role == "staff" %}
+            <input name="marks_{{ s[1] }}"
+                   value="{{ marks.get(s[1], {}).get(selected_exam, '') }}">
+        {% else %}
+            <span class="readonly">
+                {{ marks.get(s[1], {}).get(selected_exam, '-') }}
+            </span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% if role == "staff" %}
+<br>
+<button type="submit">Save Marks</button>
+{% endif %}
+
+</form>
+
+</div>
+
+</body>
+</html>

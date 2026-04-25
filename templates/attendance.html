@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>📅 Attendance</h2>
+
+<div class="attendance-container">
+
+<!-- 🔥 STAFF PANEL -->
+{% if role == "staff" %}
+
+<div class="card">
+
+<h3>📋 Attendance Entry</h3>
+
+<form method="GET" action="/attendance">
+    <select name="year" required>
+        <option value="">Select Year</option>
+        <option value="1">First Year</option>
+        <option value="2">Second Year</option>
+    </select>
+    <button>Load</button>
+</form>
+
+<p>Date: {{ today }}</p>
+
+{% if students %}
+<form action="/save_attendance" method="POST">
+
+<input type="hidden" name="date" value="{{ today }}">
+<input type="hidden" name="year" value="{{ selected_year }}">
+
+<table>
+<tr>
+<th>Name</th>
+<th>Present</th>
+</tr>
+
+{% for s in students %}
+<tr>
+<td>{{ s[0] }}</td>
+<td><input type="checkbox" name="present_{{ s[1] }}"></td>
+</tr>
+{% endfor %}
+
+</table>
+
+<button>Save</button>
+</form>
+{% endif %}
+
+</div>
+
+{% endif %}
+
+
+<!-- 🔥 SEARCH (COMMON) -->
+<div class="card">
+
+<h3>🔍 Search Attendance</h3>
+
+<form method="POST" action="/search_attendance">
+<input type="date" name="date" required>
+<button>Search</button>
+</form>
+
+</div>
+
+
+<!-- 🔥 RESULT -->
+{% if records %}
+
+<div class="card">
+
+<h3>📊 Result</h3>
+
+<table>
+
+{% if role == "student" %}
+<tr>
+<th>Date</th>
+<th>Status</th>
+</tr>
+
+{% for r in records %}
+<tr>
+<td>{{ r[0] }}</td>
+<td>{{ r[1] }}</td>
+</tr>
+{% endfor %}
+
+{% else %}
+<tr>
+<th>Name</th>
+<th>Reg No</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+
+{% for r in records %}
+<tr>
+<td>{{ r[0] }}</td>
+<td>{{ r[1] }}</td>
+<td>{{ r[2] }}</td>
+<td>{{ r[3] }}</td>
+</tr>
+{% endfor %}
+{% endif %}
+
+</table>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
