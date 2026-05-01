@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>📅 Attendance</h2>
+<h2> Attendance</h2>
 
 <div class="attendance-container">
 
@@ -10,24 +10,32 @@
 
 <div class="card">
 
-<h3>📋 Attendance Entry</h3>
+<h3> Attendance Entry</h3>
 
+<!-- 🔥 FILTER (Batch + Year) -->
 <form method="GET" action="/attendance">
+
+    <input type="number" name="batch" placeholder="Batch (2025)" required>
+
     <select name="year" required>
         <option value="">Select Year</option>
-        <option value="1">First Year</option>
-        <option value="2">Second Year</option>
+        <option value="1" {% if selected_year=='1' %}selected{% endif %}>First Year</option>
+        <option value="2" {% if selected_year=='2' %}selected{% endif %}>Second Year</option>
     </select>
-    <button>Load</button>
+
+    <button type="submit">Load</button>
+
 </form>
 
 <p>Date: {{ today }}</p>
 
 {% if students %}
+
 <form action="/save_attendance" method="POST">
 
 <input type="hidden" name="date" value="{{ today }}">
 <input type="hidden" name="year" value="{{ selected_year }}">
+<input type="hidden" name="batch" value="{{ selected_batch }}">
 
 <table>
 <tr>
@@ -38,14 +46,20 @@
 {% for s in students %}
 <tr>
 <td>{{ s[0] }}</td>
-<td><input type="checkbox" name="present_{{ s[1] }}"></td>
+<td>
+<input type="checkbox" name="present_{{ s[1] }}">
+</td>
 </tr>
 {% endfor %}
 
 </table>
 
-<button>Save</button>
+<button type="submit">Save Attendance</button>
+
 </form>
+
+{% else %}
+<p>No students found</p>
 {% endif %}
 
 </div>
@@ -53,25 +67,25 @@
 {% endif %}
 
 
-<!-- 🔥 SEARCH (COMMON) -->
+<!-- 🔍 SEARCH -->
 <div class="card">
 
 <h3>🔍 Search Attendance</h3>
 
 <form method="POST" action="/search_attendance">
 <input type="date" name="date" required>
-<button>Search</button>
+<button type="submit">Search</button>
 </form>
 
 </div>
 
-
-<!-- 🔥 RESULT -->
-{% if records %}
+{% if records is defined %}
 
 <div class="card">
 
-<h3>📊 Result</h3>
+<h3>Result</h3>
+
+{% if records %}
 
 <table>
 
@@ -104,9 +118,14 @@
 <td>{{ r[3] }}</td>
 </tr>
 {% endfor %}
+
 {% endif %}
 
 </table>
+
+{% else %}
+<p class="empty">No records found ❌</p>
+{% endif %}
 
 </div>
 

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Admission Form</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background: #f4f7fb;
+            padding: 30px;
+        }
+
+        .box{
+            background: white;
+            max-width: 900px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .grid{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input, select{
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .full{
+            grid-column: span 2;
+        }
+
+        button{
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button:hover{
+            background: #2f4bd1;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>Student Admission Form</h2>
+
+    <form action="/save_student_form" method="POST" enctype="multipart/form-data">
+
+        <div class="grid">
+
+            <!-- REGNO + BATCH -->
+            <input type="text" name="regno" placeholder="Register Number" required>
+
+            <input type="text" name="batch" placeholder="Batch" required>
+
+            <!-- BASIC -->
+            <input type="text" name="name" placeholder="Student Name" required>
+
+            <input type="date" name="dob" required>
+
+            <input type="text" name="phone" placeholder="Phone Number" required>
+
+            <input type="text" name="umis" placeholder="UMIS Number">
+
+            <!-- MARKS -->
+            <input type="text" name="tenth_mark" placeholder="10th Percentage">
+
+            <input type="text" name="twelfth_mark" placeholder="12th Percentage">
+
+            <input type="text" name="ug_mark" placeholder="UG Percentage">
+
+            <input type="text" name="aadhar" placeholder="Aadhar Number">
+
+            <!-- DEPARTMENT -->
+            <select name="department" required>
+                <option value="">Select Department</option>
+                <option>MCA</option>
+            </select>
+
+            <!-- YEAR -->
+            <select name="year" required>
+                <option value="">Select Year</option>
+                <option value="1">First Year</option>
+                <option value="2">Second Year</option>
+            </select>
+
+            <input type="date" name="admission_date">
+
+            <input type="text" name="place" placeholder="Place">
+
+            <!-- DISTRICT -->
+            <input type="text" name="district" placeholder="District">
+
+            <input type="text" name="pincode" placeholder="Pincode">
+
+            <input type="text" name="state" placeholder="State">
+
+            <!-- FILES -->
+            <label>Upload 10th Marksheet</label>
+            <input type="file" name="tenth_file">
+
+            <label>Upload 12th Marksheet</label>
+            <input type="file" name="twelfth_file">
+
+            <label>Upload Aadhar</label>
+            <input type="file" name="aadhar_file">
+
+            <label>Upload TC</label>
+            <input type="file" name="tc_file">
+
+            <label>Upload Degree</label>
+            <input type="file" name="degree_file">
+
+        </div>
+
+        <button type="submit">
+            Submit Student Details
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

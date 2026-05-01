@@ -1,16 +1,28 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
-
+from werkzeug.utils import secure_filename
 import os
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, session
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = "static/uploads"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
 app.secret_key = os.environ.get("SECRET_KEY", "fallback123") 
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "None"  # 🔥 must
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+
+@app.context_processor
+def inject_user():
+    return dict(role=session.get("role"))
+
 # DB create
 def init_db():
     conn = sqlite3.connect("users.db")
@@ -29,18 +41,35 @@ def init_db():
 
     # student table
     cur.execute('''
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS student_details (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             name TEXT,
-            regno TEXT,
-            admission TEXT,
-            year TEXT,
-            dept TEXT,
+            dob TEXT,
             phone TEXT,
-            parent TEXT,
-            address TEXT,
-            assignment TEXT,
-            batch TEXT
+            regno TEXT,
+            batch TEXT,
+            tenth_mark TEXT,
+            twelfth_mark TEXT,
+            ug_mark TEXT,
+
+            aadhar TEXT,
+            umis TEXT,
+
+            department TEXT,
+            year TEXT,
+            admission_date TEXT,
+
+            place TEXT,
+            district TEXT,
+            pincode TEXT,
+            state TEXT,
+
+            tenth_file TEXT,
+            twelfth_file TEXT,
+            aadhar_file TEXT,
+            tc_file TEXT,
+            degree_file TEXT
         )
     ''')
 
@@ -93,7 +122,7 @@ init_db()
 @app.route('/')
 def root():
     return redirect('/login')
-
+    print("🔥 NEW CODE RUNNING SA 🔥")
 
 @app.route('/register')
 def register_page():
@@ -108,6 +137,10 @@ def login_page():
 @app.route('/dashboard')
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route('/student_form')
+def student_form():
+    return render_template('student_form.html')
 
 
 @app.route('/register', methods=['POST'])
@@ -140,53 +173,151 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
 
-    username = request.form.get('username')
+    username = request.form.get('username')   # 👉 regno
     password = request.form.get('password')
     role = request.form.get('role')
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    cur.execute(
-        "SELECT * FROM users WHERE username=? AND password=? AND role=?",
-        (username, password, role)
-    )
-
+    # 🔥 username check
+    cur.execute("SELECT * FROM users WHERE username=?", (username,))
     user = cur.fetchone()
 
-    # 🔥 DEBUG PRINT
-    print("USER:", user)
-
-    if user:
-        session["role"] = role
-        session["username"] = username
-
-        # 🔥 FIXED PART (ONLY THIS CHANGED)
-        if role == "student":
-            cur.execute(
-                "SELECT regno FROM students WHERE regno=?",   # ✅ FIX
-                (username,)
-            )
-            data = cur.fetchone()
-
-            print("STUDENT DATA:", data)   # 🔍 DEBUG
-
-            if data:
-                session["regno"] = data[0]
-
-        # 🔥 DEBUG SESSION
-        print("SESSION AFTER LOGIN:", dict(session))
-
+    if not user:
         conn.close()
-        return redirect('/home')
+        return render_template("login.html", error="Wrong Username ❌")
+
+    # 🔥 password check
+    if user[3] != password:
+        conn.close()
+        return render_template("login.html", error="Wrong Password ❌")
+
+    # 🔥 role check
+    if user[4] != role:
+        conn.close()
+        return render_template("login.html", error="Wrong Role ❌")
+
+    # 🔥 SUCCESS LOGIN
+    session["role"] = role
+    session["username"] = username
+
+    # 🔥 STUDENT → regno direct set
+    if role == "student":
+        session["regno"] = username
+
+        # 👉 optional (year + batch auto fetch)
+        cur.execute(
+            "SELECT year, batch FROM students WHERE regno=?",
+            (username,)
+        )
+        data = cur.fetchone()
+
+        if data:
+            session["year"] = data[0]
+            session["batch"] = data[1]
 
     conn.close()
-    return "Invalid Login ❌"
-
-    print("LOGIN FAILED ❌")
-    return render_template("login.html", error="Invalid login")
+    return redirect('/home')
 
     
+
+@app.route('/save_student_form', methods=['POST'])
+def save_student_form():
+
+    # FILES
+    tenth_file = request.files['tenth_file']
+    twelfth_file = request.files['twelfth_file']
+    aadhar_file = request.files['aadhar_file']
+    tc_file = request.files['tc_file']
+    degree_file = request.files['degree_file']
+
+    # SECURE NAMES
+    tenth_name = secure_filename(tenth_file.filename)
+    twelfth_name = secure_filename(twelfth_file.filename)
+    aadhar_name = secure_filename(aadhar_file.filename)
+    tc_name = secure_filename(tc_file.filename)
+    degree_name = secure_filename(degree_file.filename)
+
+    # SAVE FILES
+    tenth_file.save(os.path.join(app.config['UPLOAD_FOLDER'], tenth_name))
+    twelfth_file.save(os.path.join(app.config['UPLOAD_FOLDER'], twelfth_name))
+    aadhar_file.save(os.path.join(app.config['UPLOAD_FOLDER'], aadhar_name))
+    tc_file.save(os.path.join(app.config['UPLOAD_FOLDER'], tc_name))
+    degree_file.save(os.path.join(app.config['UPLOAD_FOLDER'], degree_name))
+
+    conn = sqlite3.connect('users.db')
+    cur = conn.cursor()
+
+    cur.execute('''
+    INSERT INTO student_details (
+
+        regno,
+        batch,
+
+        name,
+        dob,
+        phone,
+
+        tenth_mark,
+        twelfth_mark,
+        ug_mark,
+
+        aadhar,
+        umis,
+
+        department,
+        year,
+        admission_date,
+
+        place,
+        district,
+        pincode,
+        state,
+
+        tenth_file,
+        twelfth_file,
+        aadhar_file,
+        tc_file,
+        degree_file
+
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+
+        request.form['regno'],
+        request.form['batch'],
+
+        request.form['name'],
+        request.form['dob'],
+        request.form['phone'],
+
+        request.form['tenth_mark'],
+        request.form['twelfth_mark'],
+        request.form['ug_mark'],
+
+        request.form['aadhar'],
+        request.form['umis'],
+
+        request.form['department'],
+        request.form['year'],
+        request.form['admission_date'],
+
+        request.form['place'],
+        request.form['district'],
+        request.form['pincode'],
+        request.form['state'],
+
+        tenth_name,
+        twelfth_name,
+        aadhar_name,
+        tc_name,
+        degree_name
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return "Student Details Saved Successfully ✅"
 
 
 
@@ -224,6 +355,20 @@ def add_student():
     else:
         return redirect("/second_year")
 
+@app.route('/delete_student/<int:id>', methods=['POST'])
+def delete_student(id):
+
+    if session.get("role") != "staff":
+        return "Unauthorized"
+
+    conn = sqlite3.connect("users.db")
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM students WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer)  # same pageக்கு திரும்பும்
 
 @app.route('/add_staff', methods=['POST'])
 def add_staff():
@@ -249,61 +394,151 @@ def home():
     if not session.get("role"):
         return redirect('/login')
 
-    return render_template("home.html")
+    role = session.get("role")
+    regno = request.args.get("regno")   # staff select student
+
+    conn = sqlite3.connect("users.db")
+    cur = conn.cursor()
+
+    student = None
+    attendance = []
+    marks = []
+
+    # 🔥 STUDENT LOGIN
+    if role == "student":
+
+        regno = session.get("regno")
+
+        # student details
+        cur.execute("SELECT * FROM students WHERE regno=?", (regno,))
+        student = cur.fetchone()
+
+        # attendance
+        cur.execute(
+            "SELECT date, status FROM attendance WHERE regno=?",
+            (regno,)
+        )
+        attendance = cur.fetchall()
+
+        # marks (JOIN subjects)
+        cur.execute("""
+        SELECT subjects.name, marks.exam_type, marks.marks
+        FROM marks
+        JOIN subjects ON marks.subject_id = subjects.id
+        WHERE marks.regno=?
+        """, (regno,))
+        marks = cur.fetchall()
+
+
+    # 🔥 STAFF LOGIN
+    elif role == "staff" and regno:
+
+        # student details
+        cur.execute("SELECT * FROM students WHERE regno=?", (regno,))
+        student = cur.fetchone()
+
+        # attendance
+        cur.execute(
+            "SELECT date, status FROM attendance WHERE regno=?",
+            (regno,)
+        )
+        attendance = cur.fetchall()
+
+        # marks
+        cur.execute("""
+        SELECT subjects.name, marks.exam_type, marks.marks
+        FROM marks
+        JOIN subjects ON marks.subject_id = subjects.id
+        WHERE marks.regno=?
+        """, (regno,))
+        marks = cur.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "home.html",
+        student=student,
+        attendance=attendance,
+        marks=marks,
+        role=role
+    )
 
 
 @app.route('/first_year', methods=['GET', 'POST'])
 def first_year():
 
-    selected_year = request.form.get('filter_year')
+    role = session.get("role")   # 🔥 ADD THIS
+
+    batch = request.form.get('first_year')
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    if selected_year:
+    if batch:
         cur.execute(
             "SELECT * FROM students WHERE year=? AND batch=?",
-            ("1", selected_year)
+            ("1", batch)
         )
     else:
-        cur.execute(
-            "SELECT * FROM students WHERE year=?",
-            ("1",)
-        )
+        cur.execute("SELECT * FROM students WHERE year=?", ("1",))
 
     students = cur.fetchall()
     conn.close()
 
-    return render_template("first_year.html", students=students)
+    return render_template(
+        "first_year.html",
+        students=students,
+        role=role   # 🔥 PASS HERE
+    )
 
 
 @app.route('/second_year', methods=['GET', 'POST'])
 def second_year():
 
-    selected_year = request.form.get('filter_year')
+    role = session.get("role")   # 🔥 ADD THIS
+
+    batch = request.form.get('second_year')
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    if selected_year:
+    if batch:
         cur.execute(
             "SELECT * FROM students WHERE year=? AND batch=?",
-            ("2", selected_year)
+            ("2", batch)
         )
     else:
-        cur.execute(
-            "SELECT * FROM students WHERE year=?",
-            ("2",)
-        )
+        cur.execute("SELECT * FROM students WHERE year=?", ("2",))
 
     students = cur.fetchall()
     conn.close()
 
-    return render_template("second_year.html", students=students)
+    return render_template(
+        "second_year.html",
+        students=students,
+        role=role   # 🔥 PASS HERE
+    )
 
+@app.route('/delete_staff/<int:id>', methods=['POST'])
+def delete_staff(id):
 
+    if session.get("role") != "staff":
+        return "Unauthorized ❌"
+
+    conn = sqlite3.connect("users.db")
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM staff WHERE id=?", (id,))  # 🔥 table name check pannunga
+
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer)
+
+    
 @app.route('/staff')
 def staff():
+    role = session.get("role")
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
@@ -320,42 +555,61 @@ from datetime import date
 from datetime import date
 
 # 🔥 ATTENDANCE PAGE
+from datetime import date
+
 @app.route('/attendance')
 def attendance():
 
-    today = date.today()
-
-    # 🔥 student login → no student list load
-    if session.get("role") == "student":
-        return render_template(
-            "attendance.html",
-            today=today,
-            role="student"
-        )
-
-    # 🔥 staff login → allow year selection
-    year = request.args.get('year')
+    role = session.get("role")
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    if year:
-        cur.execute(
-            "SELECT name, regno FROM students WHERE year=? ORDER BY name",
-            (year,)
-        )
-        students = cur.fetchall()
+    students = []
+    records = []
+
+    # 🔥 FIX: initialize pannidu
+    year = None
+    batch = None
+
+    # 🔥 STUDENT VIEW
+    if role == "student":
+        regno = session.get("regno")
+
+        cur.execute('''
+            SELECT date, status
+            FROM attendance
+            WHERE regno=?
+            ORDER BY date DESC
+        ''', (regno,))
+
+        records = cur.fetchall()
+
+    # 🔥 STAFF VIEW
     else:
-        students = []
+        year = request.args.get("year")
+        batch = request.args.get("batch")
+
+        print("YEAR:", year)
+        print("BATCH:", batch)
+
+        if year and batch:
+            cur.execute(
+                "SELECT name, regno FROM students WHERE year=? AND batch=?",
+                (year, batch)
+            )
+            students = cur.fetchall()
 
     conn.close()
 
     return render_template(
         "attendance.html",
         students=students,
-        today=today,
+        records=records,
+        role=role,
+        today=date.today(),
         selected_year=year,
-        role="staff"
+        selected_batch=batch
     )
 
 
@@ -368,11 +622,16 @@ def save_attendance():
 
     date_val = request.form.get('date')
     year = request.form.get('year')
+    batch = request.form.get('batch')   # ✅ ADD THIS
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    cur.execute("SELECT regno FROM students WHERE year=?", (year,))
+    # ✅ FIX: filter by BOTH year + batch
+    cur.execute(
+        "SELECT regno FROM students WHERE year=? AND batch=?",
+        (year, batch)
+    )
     students = cur.fetchall()
 
     for s in students:
@@ -380,61 +639,77 @@ def save_attendance():
 
         status = "Present" if f"present_{regno}" in request.form else "Absent"
 
+        # check already exists
         cur.execute(
-            "INSERT INTO attendance (date, regno, status, year) VALUES (?, ?, ?, ?)",
-            (date_val, regno, status, year)
+            "SELECT id FROM attendance WHERE regno=? AND date=?",
+            (regno, date_val)
         )
+        exist = cur.fetchone()
+
+        if exist:
+            cur.execute(
+                "UPDATE attendance SET status=? WHERE id=?",
+                (status, exist[0])
+            )
+        else:
+            cur.execute(
+                "INSERT INTO attendance (date, regno, status, year) VALUES (?, ?, ?, ?)",
+                (date_val, regno, status, year)
+            )
 
     conn.commit()
     conn.close()
 
-    return redirect('/attendance?year=' + year)
+    # ✅ FIX: redirect with batch also
+    return redirect(f'/attendance?year={year}&batch={batch}')
 
 
 # 🔥 SEARCH ATTENDANCE (SECURE)
 @app.route('/search_attendance', methods=['POST'])
 def search_attendance():
 
-    search_date = request.form.get('date')
+    role = session.get("role")
+    search_date = request.form.get("date")
 
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    # 🔥 STUDENT → OWN DATA ONLY
-    if session.get("role") == "student":
+    students = []
+    records = []
+
+    print("SEARCH DATE:", search_date)
+
+    if role == "student":
+        regno = session.get("regno")
 
         cur.execute('''
-        SELECT date, status 
-        FROM attendance
-        WHERE date=? AND regno=?
-        ''', (search_date, session.get("regno")))
+            SELECT date, status
+            FROM attendance
+            WHERE regno=? AND date=?
+        ''', (regno, search_date))
 
         records = cur.fetchall()
 
-        conn.close()
+    else:
+        cur.execute('''
+            SELECT students.name, attendance.regno, attendance.status, attendance.date
+            FROM attendance
+            JOIN students ON attendance.regno = students.regno
+            WHERE attendance.date=?
+        ''', (search_date,))
 
-        return render_template(
-            "attendance.html",
-            records=records,
-            role="student"
-        )
+        records = cur.fetchall()
 
-    # 🔥 STAFF → FULL DATA
-    cur.execute('''
-    SELECT students.name, attendance.regno, attendance.status, attendance.date
-    FROM attendance
-    JOIN students ON attendance.regno = students.regno
-    WHERE attendance.date=?
-    ''', (search_date,))
-
-    records = cur.fetchall()
+    print("RESULT:", records)
 
     conn.close()
 
     return render_template(
         "attendance.html",
+        students=students,
         records=records,
-        role="staff"
+        role=role,
+        today=date.today()
     )
     
 import os
@@ -567,7 +842,23 @@ def add_subject():
 
     return redirect('/semester/' + sem)
 
+@app.route('/delete_subject/<int:id>', methods=['POST'])
+def delete_subject(id):
 
+    if session.get("role") != "staff":
+        return "Unauthorized ❌"
+
+    conn = sqlite3.connect("users.db")
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM subjects WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(request.referrer)
+
+    
 @app.route('/open_subject/<int:sid>', methods=['POST'])
 def open_subject(sid):
 

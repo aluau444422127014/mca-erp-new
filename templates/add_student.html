@@ -1,32 +1,167 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Add Student</h2>
+<style>
 
-<form action="/add_student" method="POST" class="form-card">
-<div style="text-align:center;">
-    <a href="/add_student_page?year=1" class="add-btn">➕ Add Student</a>
-</div>
-<input name="name" placeholder="Name" required>
-<input name="regno" placeholder="Reg No" required>
-<input type="date" name="admission">
+.form-container{
+    display:flex;
+    justify-content:center;
+    margin-top:30px;
+}
 
-<input type="hidden" name="year" value="{{ year }}">
+.form-card{
+    width:95%;
+    max-width:950px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.1);
 
-<input name="dept" placeholder="Dept">
-<input name="phone" placeholder="Phone">
-<input name="parent" placeholder="Parent">
-<input name="address" placeholder="Address">
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
 
-<select name="assignment">
-<option>Yes</option>
-<option>No</option>
+.form-card h2{
+    grid-column:span 2;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.form-card input,
+.form-card select{
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    width:100%;
+}
+
+.full{
+    grid-column:span 2;
+}
+
+.form-card button{
+    background:#4a6cf7;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.form-card button:hover{
+    background:#2f4bd1;
+}
+
+label{
+    font-size:14px;
+    font-weight:bold;
+}
+
+</style>
+
+<div class="form-container">
+
+<form action="/save_student_form" 
+      method="POST" 
+      enctype="multipart/form-data"
+      class="form-card">
+
+<h2>Manual Student Admission</h2>
+
+<!-- REGNO -->
+<input type="text" name="regno" placeholder="Register Number" required>
+
+<!-- BATCH -->
+<input type="text" name="batch" placeholder="Batch Year (2025)" required>
+
+<!-- NAME -->
+<input type="text" name="name" placeholder="Student Name" required>
+
+<!-- DOB -->
+<input type="date" name="dob" required>
+
+<!-- PHONE -->
+<input type="text" name="phone" placeholder="Phone Number" required>
+
+<!-- 10TH -->
+<input type="text" name="tenth_mark" placeholder="10th Percentage">
+
+<!-- 12TH -->
+<input type="text" name="twelfth_mark" placeholder="12th Percentage">
+
+<!-- UG -->
+<input type="text" name="ug_mark" placeholder="UG Percentage">
+
+<!-- AADHAR -->
+<input type="text" name="aadhar" placeholder="Aadhar Number">
+
+<!-- UMIS -->
+<input type="text" name="umis" placeholder="UMIS Number">
+
+<!-- DEPARTMENT -->
+<select name="department" required>
+    <option value="">Select Department</option>
+    <option>MCA</option>
 </select>
 
-<input type="number" name="batch_year" placeholder="Batch Year" required>
+<!-- YEAR -->
+<select name="year" required>
+    <option value="">Select Year</option>
+    <option value="1">First Year</option>
+    <option value="2">Second Year</option>
+</select>
 
-<button type="submit">Save</button>
+<!-- ADMISSION DATE -->
+<input type="date" name="admission_date">
+
+<!-- PLACE -->
+<input type="text" name="place" placeholder="Place">
+
+<!-- DISTRICT -->
+<input type="text" name="district" placeholder="District">
+
+<!-- PINCODE -->
+<input type="text" name="pincode" placeholder="Pincode">
+
+<!-- STATE -->
+<input type="text" name="state" placeholder="State">
+
+<!-- FILES -->
+<div>
+<label>Upload 10th Marksheet</label>
+<input type="file" name="tenth_file">
+</div>
+
+<div>
+<label>Upload 12th Marksheet</label>
+<input type="file" name="twelfth_file">
+</div>
+
+<div>
+<label>Upload Aadhar</label>
+<input type="file" name="aadhar_file">
+</div>
+
+<div>
+<label>Upload Transfer Certificate</label>
+<input type="file" name="tc_file">
+</div>
+
+<div class="full">
+<label>Upload Degree Certificate</label>
+<input type="file" name="degree_file">
+</div>
+
+<!-- SUBMIT -->
+<button type="submit" class="full">
+    Save Student Details
+</button>
 
 </form>
+
+</div>
 
 {% endblock %}

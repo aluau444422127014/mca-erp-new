@@ -3,46 +3,78 @@
 <head>
     <title>College Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-   
 </head>
 
-
-<!-- 🔝 NAVBAR -->
 <body>
-
-<!-- 🔷 NAVBAR -->
+<!-- 🔙 BACK BUTTON -->
+<div class="back-btn" onclick="goBack()">
+    ⬅
+</div>
+<!-- 🔷 SIDEBAR -->
 <div class="sidebar">
-<h2>MCA ERP TEST</h2>
+
     <h2 class="logo">MCA ERP</h2>
 
-    <a href="/home">Home</a>
+    <a href="/home"> Home</a>
 
-    <!-- 🔥 STUDENTS DROPDOWN -->
-     <div class="menu-item" onclick="toggleMenu('studentMenu')">
-    Students ▾
+    <!-- 👨‍🎓 STUDENT VIEW -->
+    {% if role and role|lower == "student" %}
+
+        <a href="/attendance"> Attendance</a>
+
+        <div class="menu-item" onclick="toggleMenu('semMenu')">
+            Semester ▾
+        </div>
+
+        <div id="semMenu" class="submenu">
+            <a href="/semester/1">Sem 1</a>
+            <a href="/semester/2">Sem 2</a>
+            <a href="/semester/3">Sem 3</a>
+        </div>
+
+        <a href="/logout">Logout</a>
+
+    {% endif %}
+
+
+    <!-- 👨‍🏫 STAFF VIEW -->
+    {% if role and role|lower == "staff" %}
+
+        <!-- Students -->
+        <div class="menu-item" onclick="toggleMenu('studentMenu')">
+             Students ▾
+        </div>
+
+        <div id="studentMenu" class="submenu">
+            <a href="/first_year">First Year</a>
+            <a href="/second_year">Second Year</a>
+        </div>
+
+        <!-- Staff -->
+        <a href="/staff">Staff</a>
+
+        <!-- Attendance -->
+        <a href="/attendance">Attendance</a>
+
+        <!-- Semester -->
+        <div class="menu-item" onclick="toggleMenu('semMenu')">
+             Semester ▾
+        </div>
+
+        <div id="semMenu" class="submenu">
+            <a href="/semester/1">Sem 1</a>
+            <a href="/semester/2">Sem 2</a>
+            <a href="/semester/3">Sem 3</a>
+        </div>
+
+        <a href="/logout">Logout</a>
+
+    {% endif %}
+
 </div>
 
-<div id="studentMenu" class="submenu">
-    <a href="/first_year">First Year</a>
-    <a href="/second_year">Second Year</a>
-</div>
 
-    <a href="/staff">Staff</a>
-    <a href="/attendance">Attendance</a>
-
-    <!-- 🔥 SEMESTER -->
-    <div class="menu-item" onclick="toggleMenu('semMenu')">
-    Semester ▾
-</div>
-
-<div id="semMenu" class="submenu">
-    <a href="/semester/1">Sem 1</a>
-    <a href="/semester/2">Sem 2</a>
-    <a href="/semester/3">Sem 3</a>
-</div>
-    <a href="/logout">Logout</a>
-</div>
-
+<!-- 🔽 TOGGLE SCRIPT -->
 <script>
 function toggleMenu(id){
 
@@ -53,22 +85,19 @@ function toggleMenu(id){
     });
 
     let menu = document.getElementById(id);
-
     menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
-</script>
+function goBack(){
+    window.history.back();
+}
 
+</script>
 
 
 <!-- 🔻 PAGE CONTENT -->
 <div class="main-content">
     {% block content %}{% endblock %}
 </div>
-
-
-
-<!-- PAGE CONTENT -->
-
 
 </body>
 </html>

@@ -1,26 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+<title>Register</title>
+
+<style>
+body {
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#0f172a,#020617);
+    font-family: Arial;
+}
+
+.register-box {
+    width: 320px;
+    padding: 30px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+h2 {
+    color: white;
+}
+
+.input-box {
+    background: #020617;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.input-box input,
+.input-box select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: white;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #38bdf8;
+    border: none;
+    color: black;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0ea5e9;
+}
+
+a {
+    display:block;
+    margin-top:10px;
+    color:#a78bfa;
+    text-decoration:none;
+}
+</style>
 </head>
+
 <body>
+
+<div class="register-box">
 
 <h2>Register</h2>
 
-<form action="/register" method="POST">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
+<form method="POST">
 
-    <select name="role">
-        <option value="student">Student</option>
-        <option value="staff">Staff</option>
-    </select><br><br>
+<div class="input-box">
+<input name="name" placeholder="Name" required>
+</div>
 
-    <button type="submit">Register</button>
+<div class="input-box">
+<input name="username" placeholder="Username / Reg No" required>
+</div>
+
+<div class="input-box">
+<input type="password" name="password" placeholder="Password" required>
+</div>
+
+<div class="input-box">
+<select name="role">
+<option value="student">Student</option>
+<option value="staff">Staff</option>
+</select>
+</div>
+
+<button type="submit">REGISTER</button>
+
 </form>
 
-<a href="/login">Go to Login</a>
+<a href="/login">Back to Login</a>
+
+</div>
 
 </body>
 </html>
