@@ -1,11 +1,17 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
-
+from werkzeug.utils import secure_filename
 import os
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, session
 
 app = Flask(__name__)
+
+UPLOAD_FOLDER = "static/uploads"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 app.secret_key = os.environ.get("SECRET_KEY", "fallback123") 
 app.config["SESSION_COOKIE_SECURE"] = True
@@ -35,18 +41,35 @@ def init_db():
 
     # student table
     cur.execute('''
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS student_details (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             name TEXT,
-            regno TEXT,
-            admission TEXT,
-            year TEXT,
-            dept TEXT,
+            dob TEXT,
             phone TEXT,
-            parent TEXT,
-            address TEXT,
-            assignment TEXT,
-            batch TEXT
+            regno TEXT,
+            batch TEXT,
+            tenth_mark TEXT,
+            twelfth_mark TEXT,
+            ug_mark TEXT,
+
+            aadhar TEXT,
+            umis TEXT,
+
+            department TEXT,
+            year TEXT,
+            admission_date TEXT,
+
+            place TEXT,
+            district TEXT,
+            pincode TEXT,
+            state TEXT,
+
+            tenth_file TEXT,
+            twelfth_file TEXT,
+            aadhar_file TEXT,
+            tc_file TEXT,
+            degree_file TEXT
         )
     ''')
 
@@ -114,6 +137,10 @@ def login_page():
 @app.route('/dashboard')
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route('/student_form')
+def student_form():
+    return render_template('student_form.html')
 
 
 
@@ -195,6 +222,103 @@ def login():
     return redirect('/home')
 
     
+
+@app.route('/save_student_form', methods=['POST'])
+def save_student_form():
+
+    # FILES
+    tenth_file = request.files['tenth_file']
+    twelfth_file = request.files['twelfth_file']
+    aadhar_file = request.files['aadhar_file']
+    tc_file = request.files['tc_file']
+    degree_file = request.files['degree_file']
+
+    # SECURE NAMES
+    tenth_name = secure_filename(tenth_file.filename)
+    twelfth_name = secure_filename(twelfth_file.filename)
+    aadhar_name = secure_filename(aadhar_file.filename)
+    tc_name = secure_filename(tc_file.filename)
+    degree_name = secure_filename(degree_file.filename)
+
+    # SAVE FILES
+    tenth_file.save(os.path.join(app.config['UPLOAD_FOLDER'], tenth_name))
+    twelfth_file.save(os.path.join(app.config['UPLOAD_FOLDER'], twelfth_name))
+    aadhar_file.save(os.path.join(app.config['UPLOAD_FOLDER'], aadhar_name))
+    tc_file.save(os.path.join(app.config['UPLOAD_FOLDER'], tc_name))
+    degree_file.save(os.path.join(app.config['UPLOAD_FOLDER'], degree_name))
+
+    conn = sqlite3.connect('users.db')
+    cur = conn.cursor()
+
+    cur.execute('''
+    INSERT INTO student_details (
+
+        regno,
+        batch,
+
+        name,
+        dob,
+        phone,
+
+        tenth_mark,
+        twelfth_mark,
+        ug_mark,
+
+        aadhar,
+        umis,
+
+        department,
+        year,
+        admission_date,
+
+        place,
+        district,
+        pincode,
+        state,
+
+        tenth_file,
+        twelfth_file,
+        aadhar_file,
+        tc_file,
+        degree_file
+
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+
+        request.form['regno'],
+        request.form['batch'],
+
+        request.form['name'],
+        request.form['dob'],
+        request.form['phone'],
+
+        request.form['tenth_mark'],
+        request.form['twelfth_mark'],
+        request.form['ug_mark'],
+
+        request.form['aadhar'],
+        request.form['umis'],
+
+        request.form['department'],
+        request.form['year'],
+        request.form['admission_date'],
+
+        request.form['place'],
+        request.form['district'],
+        request.form['pincode'],
+        request.form['state'],
+
+        tenth_name,
+        twelfth_name,
+        aadhar_name,
+        tc_name,
+        degree_name
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return "Student Details Saved Successfully ✅"
 
 
 
