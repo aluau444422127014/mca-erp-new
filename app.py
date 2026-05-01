@@ -143,6 +143,7 @@ def student_form():
     return render_template('student_form.html')
 
 
+
 @app.route('/register', methods=['POST'])
 def register():
     name = request.form['name']
