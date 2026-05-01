@@ -6,7 +6,6 @@
 <form method="POST" class="top-form">
     
 <select name="second_year" required>
-
 <option value="">Select Batch</option>
 
 {% for y in range(2000, 2101) %}
@@ -16,7 +15,6 @@
 </select>
 
 <button>Load</button>
-
 </form>
 
 <a href="/add_student_page?year=2" class="add-btn">➕ Add Student</a>
@@ -38,7 +36,17 @@
     <td>{{ s[1] }}</td>
     <td>{{ s[2] }}</td>
     <td>
+
         <button class="view-btn" onclick="toggleDetails('d{{ s[0] }}')">View</button>
+
+        {% if role == "staff" %}
+        <form action="/delete_student/{{ s[0] }}" method="POST" style="display:inline;">
+            <button class="delete-btn" onclick="return confirm('Delete student?')">
+                ❌ Remove
+            </button>
+        </form>
+        {% endif %}
+
     </td>
 </tr>
 

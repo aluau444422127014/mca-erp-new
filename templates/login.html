@@ -6,22 +6,26 @@
 <style>
 body {
     margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg,#0f172a,#020617);
     font-family: Arial;
-    background: linear-gradient(135deg, #0f172a, #020617);
-    color: white;
 }
 
-/* CENTER BOX */
-.container {
-    width: 400px;
-    margin: 80px auto;
-    background: rgba(255,255,255,0.05);
+/* 🔥 GLASS CARD */
+.login-box {
+    width: 350px;
     padding: 30px;
+    background: rgba(255,255,255,0.05);
     border-radius: 15px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
 }
 
-/* TABS */
+/* 🔥 TABS */
 .tabs {
     display: flex;
     margin-bottom: 20px;
@@ -36,78 +40,108 @@ body {
     cursor: pointer;
 }
 
-.tabs button.active {
+.tabs .active {
     background: #38bdf8;
     color: black;
 }
 
-/* FORM */
-form {
-    display: none;
-}
-
-form.active {
-    display: block;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
+/* 🔥 INPUT */
+.input-box {
+    background: #020617;
     margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
 }
 
-button {
+.input-box input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: white;
+    outline: none;
+}
+
+/* 🔥 BUTTON */
+.login-btn {
     width: 100%;
     padding: 10px;
+    margin-top: 15px;
     background: #38bdf8;
     border: none;
+    color: black;
+    font-weight: bold;
     cursor: pointer;
+    border-radius: 6px;
 }
-</style>
 
+.login-btn:hover {
+    background: #0ea5e9;
+}
+
+a {
+    color: #a78bfa;
+    text-decoration: none;
+}
+
+form { display:none; }
+form.active { display:block; }
+
+</style>
 </head>
+
 <body>
 
-<div class="container">
+<div class="login-box">
 
-    <!-- 🔥 TABS -->
-    <div class="tabs">
-        <button onclick="showForm('staff')" id="staffTab" class="active">Staff</button>
-        <button onclick="showForm('student')" id="studentTab">Student</button>
-    </div>
+<div class="tabs">
+    <button id="staffTab" class="active" onclick="switchForm('staff')">Staff</button>
+    <button id="studentTab" onclick="switchForm('student')">Student</button>
+</div>
 
-    <!-- 🔥 STAFF FORM -->
-    <form method="POST" action="/login" id="staffForm" class="active">
-        <input type="hidden" name="role" value="staff">
+<!-- 🔥 STAFF -->
+<form method="POST" action="/login" id="staffForm" class="active">
+<input type="hidden" name="role" value="staff">
 
-        <input name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+<div class="input-box">
+<input name="username" placeholder="Username" required>
+</div>
 
-        <button type="submit">Login</button>
-    </form>
+<div class="input-box">
+<input type="password" name="password" placeholder="Password" required>
+</div>
 
-    <!-- 🔥 STUDENT FORM -->
-    <form method="POST" action="/login" id="studentForm">
-        <input type="hidden" name="role" value="student">
+<button class="login-btn">LOGIN</button>
+</form>
 
-        <input name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
+<!-- 🔥 STUDENT -->
+<form method="POST" action="/login" id="studentForm">
+<input type="hidden" name="role" value="student">
 
-        <button type="submit">Login</button>
-    </form>
+<div class="input-box">
+<input name="username" placeholder="Register No" required>
+</div>
+
+<div class="input-box">
+<input type="password" name="password" placeholder="Password" required>
+</div>
+
+<button class="login-btn">LOGIN</button>
+</form>
+
+<p style="margin-top:15px;">
+<a href="/register">Create Account</a>
+</p>
 
 </div>
 
 <script>
-function showForm(type){
-
+function switchForm(type){
     document.getElementById("staffForm").classList.remove("active");
     document.getElementById("studentForm").classList.remove("active");
-
     document.getElementById("staffTab").classList.remove("active");
     document.getElementById("studentTab").classList.remove("active");
 
-    if(type === "staff"){
+    if(type==="staff"){
         document.getElementById("staffForm").classList.add("active");
         document.getElementById("staffTab").classList.add("active");
     } else {
@@ -116,6 +150,13 @@ function showForm(type){
     }
 }
 </script>
+
+<!-- 🔥 JS ERROR POPUP -->
+{% if error %}
+<script>
+alert("{{ error }}");
+</script>
+{% endif %}
 
 </body>
 </html>

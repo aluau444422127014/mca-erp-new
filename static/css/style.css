@@ -4,6 +4,31 @@
     padding: 0;
     box-sizing: border-box;
 }
+/* 🔙 BACK BUTTON */
+.back-btn{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 999;
+    transition: 0.3s;
+}
+
+.back-btn:hover{
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
+}
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -339,3 +364,69 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .logout-btn:hover {
     background: #cc0000;
 }
+
+
+.form-card{
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 15px;
+    width: 650px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.form-card input,
+.form-card select{
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+}
+
+.form-card button{
+    grid-column: span 2;
+    padding: 12px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form-card button:hover{
+    background: #4338ca;
+}
+
+.delete-btn{
+    background:#ef4444;
+    color:white;
+    border:none;
+    padding:5px 10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.delete-btn:hover{
+    background:#dc2626;
+}
+.popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: red;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {transform: translateX(100%);}
+    to {transform: translateX(0);}
+}
+

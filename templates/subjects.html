@@ -4,69 +4,117 @@
     <title>Subjects</title>
 
     <style>
-        body{
-            font-family: Arial;
-            background: #f5f7fb;
-            padding: 20px;
-        }
 
-        h2{
-            color: #333;
-        }
+/* 🔥 BODY */
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    padding: 20px;
+    color: #e2e8f0;
+}
 
-        .box{
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
+/* 🔥 TITLE */
+h2{
+    text-align:center;
+    margin-bottom: 20px;
+}
 
-        input{
-            padding: 8px;
-            margin: 5px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
+/* 🔥 GLASS BOX */
+.box{
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
 
-        button{
-            padding: 8px 15px;
-            border: none;
-            background: #4a6cf7;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+.box:hover{
+    transform: translateY(-3px);
+}
 
-        button:hover{
-            background: #2f4bd1;
-        }
+/* 🔥 INPUT */
+input{
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: #1e293b;
+    color: white;
+}
 
-        table{
-            width: 100%;
-            border-collapse: collapse;
-        }
+/* 🔥 BUTTON */
+button{
+    padding: 8px 15px;
+    border: none;
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
 
-        th, td{
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
+button:hover{
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
 
-        .key-box{
-            display: flex;
-            gap: 10px;
-        }
+/* 🔥 TABLE */
+table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
 
-        .empty{
-            color: gray;
-        }
-    </style>
+th{
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    text-align: left;
+}
+
+td{
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 🔥 ROW HOVER */
+tr:hover{
+    background: rgba(255,255,255,0.05);
+}
+
+/* 🔥 KEY BOX */
+.key-box{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* 🔥 EMPTY TEXT */
+.empty{
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* 🔥 REMOVE BUTTON SPECIAL */
+button:last-child{
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+button:last-child:hover{
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+</style>
 </head>
 
 <body>
-
-<h2>📘 Semester {{ sem }}</h2>
+<div class="back-btn" onclick="goBack()">
+    ⬅
+</div>
+<h2> Semester {{ sem }}</h2>
 
 <!-- 🔥 STAFF ONLY: ADD SUBJECT -->
 {% if session.get("role") == "staff" %}
@@ -107,12 +155,20 @@
                 <button type="submit">Open</button>
             </form>
 
+            <form action="/delete_subject/{{ s[0] }}" method="POST" style="display:inline;">
+            <button onclick="return confirm('Delete subject?')">❌ Remove</button>
+        </form>
+
         {% else %}
             <!-- 🎓 STUDENT: no key -->
             <form action="/open_subject/{{ s[0] }}" method="POST">
                 <button type="submit">Open</button>
             </form>
+
+
         {% endif %}
+
+
     </td>
 </tr>
 {% endfor %}
@@ -124,6 +180,9 @@
 {% endif %}
 
 </div>
-
+<script>function goBack(){
+    window.history.back();
+}
+</script>
 </body>
 </html>

@@ -13,7 +13,7 @@
 <input name="contact" placeholder="Contact">
 <input name="position" placeholder="Position">
 
-<button>Save</button>
+<button type="submit">Save</button>
 </form>
 </div>
 
@@ -34,7 +34,19 @@
     <td>{{ s[1] }}</td>
     <td>{{ s[2] }}</td>
     <td>
+
+        <!-- 🔍 VIEW BUTTON -->
         <button class="view-btn" onclick="toggleDetails('d{{ s[0] }}')">View</button>
+
+        <!-- 🔥 REMOVE BUTTON (ONLY STAFF CAN SEE) -->
+        {% if role and role|lower == "staff" %}
+        <form action="/delete_staff/{{ s[0] }}" method="POST" style="display:inline;">
+            <button class="delete-btn" onclick="return confirm('Delete staff?')">
+                ❌ Remove
+            </button>
+        </form>
+        {% endif %}
+
     </td>
 </tr>
 
