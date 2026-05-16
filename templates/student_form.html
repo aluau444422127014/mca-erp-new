@@ -6,59 +6,179 @@
 
     <style>
 
-        body{
-            font-family: Arial;
-            background: #f4f7fb;
-            padding: 30px;
-        }
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .box{
-            background: white;
-            max-width: 900px;
-            margin: auto;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#020024,#090979,#6a11cb);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: white;
+}
 
-        h2{
-            text-align: center;
-            margin-bottom: 25px;
-        }
+/* MAIN CONTAINER */
 
-        .grid{
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+.box{
+    width: 95%;
+    max-width: 1200px;
+    margin: auto;
 
-        input, select{
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            width: 100%;
-        }
+    background: rgba(255,255,255,0.08);
 
-        .full{
-            grid-column: span 2;
-        }
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 
-        button{
-            background: #4a6cf7;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-        }
+    border: 1px solid rgba(255,255,255,0.1);
 
-        button:hover{
-            background: #2f4bd1;
-        }
+    border-radius: 25px;
 
-    </style>
+    padding: 40px;
+
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+/* TITLE */
+
+h2{
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 40px;
+    color: white;
+}
+
+/* GRID */
+
+.grid{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 25px;
+}
+
+/* INPUTS */
+
+input,
+select{
+    width: 100%;
+    padding: 16px 18px;
+
+    border: none;
+    outline: none;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.12);
+
+    color: white;
+
+    font-size: 16px;
+
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    transition: 0.3s;
+}
+
+/* PLACEHOLDER */
+
+input::placeholder{
+    color: rgba(255,255,255,0.7);
+}
+
+/* SELECT */
+
+select{
+    color: white;
+}
+
+select option{
+    background: #111;
+    color: white;
+}
+
+/* INPUT FOCUS */
+
+input:focus,
+select:focus{
+    border: 1px solid #00c6ff;
+    box-shadow: 0 0 10px rgba(0,198,255,0.5);
+}
+
+/* FILE LABEL */
+
+.file-box{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-box label{
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+/* FILE INPUT */
+
+input[type="file"]{
+    padding: 12px;
+    cursor: pointer;
+}
+
+/* BUTTON */
+
+button{
+    margin-top: 35px;
+
+    width: 100%;
+
+    padding: 18px;
+
+    border: none;
+    border-radius: 15px;
+
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+
+    color: white;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+/* BUTTON HOVER */
+
+button:hover{
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(0,198,255,0.4);
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .grid{
+        grid-template-columns: 1fr;
+    }
+
+    h2{
+        font-size: 30px;
+    }
+
+    .box{
+        padding: 25px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>

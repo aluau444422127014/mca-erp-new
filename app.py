@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect,send_from_directory
 import sqlite3
 from werkzeug.utils import secure_filename
 import os
@@ -683,11 +683,7 @@ def search_attendance():
         today=date.today()
     )
     
-import os
-from flask import request, redirect, send_from_directory
 
-UPLOAD_FOLDER = "uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 @app.context_processor
 def inject_data():
