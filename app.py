@@ -959,7 +959,7 @@ def save_marks():
 
     # 🔥 all students load
     cur.execute("SELECT regno, name FROM student_details")
-    students_details = cur.fetchall()
+    student_details = cur.fetchall()
 
     for s in students:
         regno = s[0]
