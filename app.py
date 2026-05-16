@@ -48,7 +48,6 @@ def init_db():
     cur.execute('''
         CREATE TABLE IF NOT EXISTS student_details (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             name TEXT,
             dob TEXT,
             phone TEXT,
@@ -57,19 +56,15 @@ def init_db():
             tenth_mark TEXT,
             twelfth_mark TEXT,
             ug_mark TEXT,
-
             aadhar TEXT,
             umis TEXT,
-
             department TEXT,
             year TEXT,
             admission_date TEXT,
-
             place TEXT,
             district TEXT,
             pincode TEXT,
             state TEXT,
-
             tenth_file TEXT,
             twelfth_file TEXT,
             aadhar_file TEXT,
