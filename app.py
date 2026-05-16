@@ -320,42 +320,6 @@ def save_student_form():
 
     return "Student Details Saved Successfully ✅"
 
-
-
-
-@app.route("/add_student", methods=["POST"])
-def add_student():
-
-    year = request.form.get("year")
-
-    conn = sqlite3.connect("users.db")   # 🔥 FIX HERE
-    cur = conn.cursor()
-
-    cur.execute("""
-    INSERT INTO students
-    (name, regno, admission, year, dept, phone, parent, address, assignment, batch)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        request.form["name"],
-        request.form["regno"],
-        request.form["admission"],
-        year,
-        request.form["dept"],
-        request.form["phone"],
-        request.form["parent"],
-        request.form["address"],
-        request.form["assignment"],
-        request.form["batch_year"]
-    ))
-
-    conn.commit()
-    conn.close()
-
-    if year == "1":
-        return redirect("/first_year")
-    else:
-        return redirect("/second_year")
-
 @app.route('/delete_student/<int:id>', methods=['POST'])
 def delete_student(id):
 
@@ -365,7 +329,7 @@ def delete_student(id):
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
 
-    cur.execute("DELETE FROM students WHERE id=?", (id,))
+    cur.execute("DELETE FROM student_details WHERE id=?", (id,))
     conn.commit()
     conn.close()
 
@@ -411,8 +375,10 @@ def home():
         regno = session.get("regno")
 
         # student details
-        cur.execute("SELECT * FROM students WHERE regno=?", (regno,))
-        student = cur.fetchone()
+        cur.execute(
+            "SELECT year, batch FROM student_details WHERE regno=?",
+            (username,)
+        )
 
         # attendance
         cur.execute(
@@ -435,7 +401,7 @@ def home():
     elif role == "staff" and regno:
 
         # student details
-        cur.execute("SELECT * FROM students WHERE regno=?", (regno,))
+        cur.execute("SELECT * FROM student_details WHERE regno=?", (regno,))
         student = cur.fetchone()
 
         # attendance
@@ -477,11 +443,11 @@ def first_year():
 
     if batch:
         cur.execute(
-            "SELECT * FROM students WHERE year=? AND batch=?",
+            "SELECT * FROM student_details WHERE year=? AND batch=?",
             ("1", batch)
         )
     else:
-        cur.execute("SELECT * FROM students WHERE year=?", ("1",))
+        cur.execute("SELECT * FROM student_details WHERE year=?", ("1",))
 
     students = cur.fetchall()
     conn.close()
@@ -505,11 +471,11 @@ def second_year():
 
     if batch:
         cur.execute(
-            "SELECT * FROM students WHERE year=? AND batch=?",
+            "SELECT * FROM student_details WHERE year=? AND batch=?",
             ("2", batch)
         )
     else:
-        cur.execute("SELECT * FROM students WHERE year=?", ("2",))
+        cur.execute("SELECT * FROM student_details WHERE year=?", ("2",))
 
     students = cur.fetchall()
     conn.close()
@@ -596,7 +562,7 @@ def attendance():
 
         if year and batch:
             cur.execute(
-                "SELECT name, regno FROM students WHERE year=? AND batch=?",
+                "SELECT name, regno FROM student_details WHERE year=? AND batch=?",
                 (year, batch)
             )
             students = cur.fetchall()
@@ -630,7 +596,7 @@ def save_attendance():
 
     # ✅ FIX: filter by BOTH year + batch
     cur.execute(
-        "SELECT regno FROM students WHERE year=? AND batch=?",
+        "SELECT regno FROM student_details WHERE year=? AND batch=?",
         (year, batch)
     )
     students = cur.fetchall()
@@ -693,9 +659,9 @@ def search_attendance():
 
     else:
         cur.execute('''
-            SELECT students.name, attendance.regno, attendance.status, attendance.date
+            SELECT student_details.name, attendance.regno, attendance.status, attendance.date
             FROM attendance
-            JOIN students ON attendance.regno = students.regno
+            JOIN student_details ON attendance.regno = student_details.regno
             WHERE attendance.date=?
         ''', (search_date,))
 
@@ -899,9 +865,9 @@ def subject_page(sid):
 
     # 🔥 STUDENTS LOAD (batch filter)
     if batch:
-        cur.execute("SELECT name, regno FROM students WHERE batch=?", (batch,))
+        cur.execute("SELECT name, regno FROM student_details WHERE batch=?", (batch,))
     else:
-        cur.execute("SELECT name, regno FROM students")
+        cur.execute("SELECT name, regno FROM student_details")
 
     students = cur.fetchall()
 
@@ -992,8 +958,8 @@ def save_marks():
     cur = conn.cursor()
 
     # 🔥 all students load
-    cur.execute("SELECT regno, name FROM students")
-    students = cur.fetchall()
+    cur.execute("SELECT regno, name FROM student_details")
+    students_details = cur.fetchall()
 
     for s in students:
         regno = s[0]
